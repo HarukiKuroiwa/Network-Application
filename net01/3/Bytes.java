@@ -12,7 +12,7 @@ public class Bytes {
       socket.connect(new InetSocketAddress(host, port), 2000);
       System.out.println("CONNECTED");
 
-      byte[] message = "こん".getBytes(StandardCharsets.UTF_8);
+      byte[] message = "こんにちは".getBytes(StandardCharsets.UTF_8);
       OutputStream out = socket.getOutputStream();
       out.write(message);
       out.write(0x0A);
