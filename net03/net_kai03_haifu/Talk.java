@@ -21,7 +21,7 @@ public class Talk {
     int port = Integer.parseInt(args[1]);
 
     try (Socket s = new Socket()) {
-      s.connect(new InetSocketAddress(host, port), 2000);   // 第1回と同じ形
+      s.connect(new InetSocketAddress(host, port), 2000); // 第1回と同じ形
       System.out.println("CONNECTED to " + s.getRemoteSocketAddress());
 
       BufferedReader in = new BufferedReader(
@@ -32,13 +32,13 @@ public class Talk {
           new InputStreamReader(System.in, StandardCharsets.UTF_8));
 
       String text;
-      while ((text = key.readLine()) != null) {             // キーボードから1行
+      while ((text = key.readLine()) != null) { // キーボードから1行
         out.write(text);
         out.write("\n");
         out.flush();
-        String reply = in.readLine();                        // 返事を待つ
+        String reply = in.readLine(); // 返事を待つ
         if (reply == null) {
-          System.out.println("CLOSED by server");            // サーバが線を切った
+          System.out.println("CLOSED by server"); // サーバが線を切った
           return;
         }
         System.out.println("REPLY: " + reply);
