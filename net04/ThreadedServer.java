@@ -20,17 +20,28 @@ public class ThreadedServer {
       System.out.println("LISTENING port=" + port);
 
       while (true) {
-        try (Socket s = server.accept()) {
-          System.err.println("ACCEPTED " + s.getRemoteSocketAddress());
-          handle(s);
-          System.err.println("CLOSED " + s.getRemoteSocketAddress());
-        } catch (IOException e) {
-          // クライアント1人のエラーで、サーバ全体を止めない
-          System.err.println("client error: " + e.getMessage());
-        }
+        // 接続を受け付けたら、その Socket を引数にして serve を呼ぶ新しいスレッドを作り、すぐに開始する。
+        // ★ ここでは try ( ) を使わない。Socket を閉じるのは serve の仕事。
+        System.err.println("accept を待つ thread=" + Thread.currentThread().getName());
+        Socket sock = server.accept();
+        new Thread(() -> serve(sock)).start();
       }
     }
   }
+
+  // 1人ぶんの会話をする static メソッド serve(Socket sock)。
+  // 最初に System.err へ「ACCEPTED 接続元のアドレス thread=いまのスレッドの名前」を1行出す。
+  // try-with-resources で sock を閉じるようにして、中で第3回の handle を呼ぶ。
+  // IOException は「client error: メッセージ」として System.err に1行出す。
+  static void serve(Socket sock) {
+    System.err.println("ACCEPTED " + sock.getRemoteSocketAddress() + " thread=" + Thread.currentThread().getName());
+    try (Socket s = sock) {
+      handle(s);
+    } catch (IOException e) {
+      System.err.println("client error: " + e.getMessage());
+    }
+  }
+
 
   // 1本の接続を最後まで相手する。QUIT か切断で戻る。
   static void handle(Socket s) throws IOException {
@@ -40,6 +51,7 @@ public class ThreadedServer {
         new OutputStreamWriter(s.getOutputStream(), StandardCharsets.UTF_8));
 
     String line;
+    System.err.println("readLine を待つ thread=" + Thread.currentThread().getName());
     while ((line = in.readLine()) != null) {
       System.err.println("RECEIVED " + line);
       if (line.equals("QUIT")) {
