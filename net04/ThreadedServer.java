@@ -22,7 +22,6 @@ public class ThreadedServer {
       while (true) {
         // 接続を受け付けたら、その Socket を引数にして serve を呼ぶ新しいスレッドを作り、すぐに開始する。
         // ★ ここでは try ( ) を使わない。Socket を閉じるのは serve の仕事。
-        System.err.println("accept を待つ thread=" + Thread.currentThread().getName());
         Socket sock = server.accept();
         new Thread(() -> serve(sock)).start();
       }
@@ -51,7 +50,6 @@ public class ThreadedServer {
         new OutputStreamWriter(s.getOutputStream(), StandardCharsets.UTF_8));
 
     String line;
-    System.err.println("readLine を待つ thread=" + Thread.currentThread().getName());
     while ((line = in.readLine()) != null) {
       System.err.println("RECEIVED " + line);
       if (line.equals("QUIT")) {
